@@ -1,0 +1,97 @@
+<div class="section-grid">
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Endpoints da API</div>
+        <div class="card-subtitle">Rotas principais do serviço VeloxPay</div>
+      </div>
+      <span class="pill pill-blue">localhost:8000</span>
+    </div>
+    <div class="endpoint-list">
+      <div class="endpoint">
+        <div class="endpoint-main">
+          <strong class="endpoint-path">POST /pagamentos</strong>
+          <span class="endpoint-desc">Registrar e processar pagamento</span>
+        </div>
+        <span class="pill pill-green">POST</span>
+      </div>
+      <div class="endpoint">
+        <div class="endpoint-main">
+          <strong class="endpoint-path">GET /pagamentos/{id_pedido}</strong>
+          <span class="endpoint-desc">Consultar uma transação existente</span>
+        </div>
+        <span class="pill pill-blue">GET</span>
+      </div>
+      <div class="endpoint">
+        <div class="endpoint-main">
+          <strong class="endpoint-path">GET /docs</strong>
+          <span class="endpoint-desc">Swagger UI interativo gerado pelo FastAPI</span>
+        </div>
+        <span class="pill pill-amber">DOCS</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <div class="card-title">Resposta padrão</div>
+      <span class="pill pill-purple">JSON</span>
+    </div>
+    <div class="code-block">
+      <button class="copy-button" type="button" data-action="copy-code">Copiar</button>
+      <pre><code>{
+  "id_pedido": 101,
+  "valor_total": 44.91,
+  "metodo_pagamento": "Pix",
+  "status_pagamento": "Aprovado"
+}</code></pre>
+    </div>
+  </section>
+</div>
+
+<div class="section-grid">
+  <section class="card">
+    <div class="card-header">
+      <div class="card-title">Exemplo em JavaScript</div>
+      <span class="pill pill-green">fetch</span>
+    </div>
+    <div class="code-block">
+      <button class="copy-button" type="button" data-action="copy-code">Copiar</button>
+      <pre><code>const response = await fetch("http://127.0.0.1:8000/pagamentos", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    id_pedido: 101,
+    valor_total: 49.90,
+    metodo_pagamento: "Pix"
+  })
+});
+
+const pagamento = await response.json();</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <div class="card-title">Exemplo em Python</div>
+      <span class="pill pill-blue">requests</span>
+    </div>
+    <div class="code-block">
+      <button class="copy-button" type="button" data-action="copy-code">Copiar</button>
+      <pre><code>import requests
+
+payload = {
+    "id_pedido": 101,
+    "valor_total": 49.90,
+    "metodo_pagamento": "Pix"
+}
+
+res = requests.post(
+    "http://127.0.0.1:8000/pagamentos",
+    json=payload
+)
+
+print(res.json())</code></pre>
+    </div>
+  </section>
+</div>

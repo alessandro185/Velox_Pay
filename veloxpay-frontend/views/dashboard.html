@@ -1,0 +1,105 @@
+<div class="metrics">
+  <article class="metric-card green">
+    <div class="metric-icon">R$</div>
+    <div class="metric-label">Total arrecadado</div>
+    <div class="metric-value">R$ 347,82</div>
+    <div class="metric-sub">12 transações hoje</div>
+  </article>
+  <article class="metric-card blue">
+    <div class="metric-icon">OK</div>
+    <div class="metric-label">Aprovados</div>
+    <div class="metric-value">10</div>
+    <div class="metric-sub">83% taxa de aprovação</div>
+  </article>
+  <article class="metric-card red">
+    <div class="metric-icon">X</div>
+    <div class="metric-label">Recusados</div>
+    <div class="metric-value">2</div>
+    <div class="metric-sub">17% de recusa simulada</div>
+  </article>
+  <article class="metric-card amber">
+    <div class="metric-icon">%</div>
+    <div class="metric-label">Economia Pix</div>
+    <div class="metric-value">R$ 12,30</div>
+    <div class="metric-sub">desconto aplicado</div>
+  </article>
+</div>
+
+<div class="section-grid">
+  <section class="card" data-section="transactions">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Últimas transações</div>
+        <div class="card-subtitle">Consulta rápida dos pedidos processados</div>
+      </div>
+      <span class="pill pill-blue">GET /pagamentos/{id}</span>
+    </div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Método</th>
+            <th>Valor</th>
+            <th>Status</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody id="transactionsTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="stack">
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Métodos de pagamento</div>
+      </div>
+      <div class="bar-list">
+        <div class="bar-row">
+          <span class="bar-label">Pix</span>
+          <div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--green)"></div></div>
+          <span class="bar-value">45%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Cartão</span>
+          <div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--blue)"></div></div>
+          <span class="bar-value">38%</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Dinheiro</span>
+          <div class="bar-track"><div class="bar-fill" style="width:17%;background:var(--amber)"></div></div>
+          <span class="bar-value">17%</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" data-section="new-payment">
+      <div class="card-header">
+        <div class="card-title">Novo pagamento</div>
+        <span class="pill pill-green">POST /pagamentos</span>
+      </div>
+      <div class="form">
+        <label class="form-row">
+          <span class="form-label">ID do pedido</span>
+          <input class="input" type="number" placeholder="ex: 6" id="inp-pedido">
+        </label>
+        <label class="form-row">
+          <span class="form-label">Valor total (R$)</span>
+          <input class="input" type="number" placeholder="ex: 49.90" id="inp-valor" step="0.01">
+        </label>
+        <label class="form-row">
+          <span class="form-label">Método de pagamento</span>
+          <select class="select" id="inp-metodo">
+            <option value="">Selecione...</option>
+            <option value="Pix">Pix - desconto 10%</option>
+            <option value="Cartão">Cartão</option>
+            <option value="Dinheiro">Dinheiro - sempre aprovado</option>
+          </select>
+        </label>
+        <button class="button" type="button" data-action="simulate-payment">Processar pagamento</button>
+        <div class="form-result" id="resultado"></div>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeloxPay - API de Pagamentos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#dashboard" data-view="dashboard" aria-label="VeloxPay Dashboard">
+      <span class="brand-mark">VP</span>
+      <span class="brand-copy">
+        <strong>VeloxPay</strong>
+        <small>Pagamentos v1.0</small>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Navegação principal">
+      <span class="nav-label">Principal</span>
+      <button class="nav-item active" type="button" data-view="dashboard">
+        <span class="nav-icon">▦</span>
+        Dashboard
+      </button>
+      <button class="nav-item" type="button" data-view="dashboard" data-focus="transactions">
+        <span class="nav-icon">≡</span>
+        Transações
+      </button>
+      <button class="nav-item" type="button" data-view="dashboard" data-focus="new-payment">
+        <span class="nav-icon">+</span>
+        Novo pagamento
+      </button>
+
+      <span class="nav-label">Análise</span>
+      <button class="nav-item" type="button" data-view="relatorios">
+        <span class="nav-icon">▥</span>
+        Relatórios
+      </button>
+      <button class="nav-item" type="button" data-view="metodos">
+        <span class="nav-icon">◇</span>
+        Métodos
+      </button>
+
+      <span class="nav-label">Sistema</span>
+      <button class="nav-item" type="button" data-view="api-docs">
+        <span class="nav-icon">{ }</span>
+        API & Docs
+      </button>
+      <button class="nav-item" type="button" data-view="configuracoes">
+        <span class="nav-icon">⚙</span>
+        Configurações
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="api-status">
+        <span class="status-dot"></span>
+        <span>API online</span>
+        <small>:8000</small>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-heading">
+        <strong id="viewTitle">Dashboard</strong>
+        <span id="viewCrumb">/ pagamentos</span>
+      </div>
+      <div class="topbar-actions">
+        <span class="pill pill-green">FastAPI online</span>
+        <span class="pill pill-blue">VeloxPay v1.0</span>
+        <button class="icon-button" id="themeToggle" type="button" aria-label="Alternar tema">◐</button>
+      </div>
+    </header>
+
+    <section class="content" id="viewContainer" aria-live="polite"></section>
+  </main>
+
+  <script src="js/api-simulator.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<div class="section-grid">
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Chaves de acesso</div>
+        <div class="card-subtitle">Configure tokens usados nas integrações do checkout</div>
+      </div>
+      <span class="pill pill-amber">Sandbox</span>
+    </div>
+    <div class="form">
+      <label class="form-row">
+        <span class="form-label">Public key</span>
+        <input class="input" value="pk_test_veloxpay_7c92a1" readonly>
+      </label>
+      <div class="form-row">
+        <span class="form-label">Secret key</span>
+        <div style="display:flex;gap:8px">
+          <input class="input" id="secretKey" type="password" value="sk_test_9f4c_veloxpay_secret" readonly>
+          <button class="button secondary" type="button" data-action="toggle-token" data-target="secretKey">Ver</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <span class="form-label">Webhook signing secret</span>
+        <div style="display:flex;gap:8px">
+          <input class="input" id="webhookSecret" type="password" value="whsec_2a31e4a9b7" readonly>
+          <button class="button secondary" type="button" data-action="toggle-token" data-target="webhookSecret">Ver</button>
+        </div>
+      </div>
+      <button class="button" type="button">Salvar configurações</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <div class="card-title">Webhooks</div>
+      <span class="pill pill-green">Ativos</span>
+    </div>
+    <div class="settings-list">
+      <div class="setting-row">
+        <div class="setting-main">
+          <strong>payment.approved</strong>
+          <span>https://api.saborrapido.com/webhooks/pagamentos</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div class="setting-main">
+          <strong>payment.refused</strong>
+          <span>https://api.saborrapido.com/webhooks/recusas</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" checked>
+          <span></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div class="setting-main">
+          <strong>payment.pending</strong>
+          <span>https://api.saborrapido.com/webhooks/pendencias</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox">
+          <span></span>
+        </label>
+      </div>
+    </div>
+  </section>
+</div>
