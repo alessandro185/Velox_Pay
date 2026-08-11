@@ -102,18 +102,7 @@ Resposta:
 }
 ```
 
-## Observacoes para o Git
 
-Nao envie ambientes virtuais, caches ou logs para o repositorio. Recomenda-se manter arquivos como estes no `.gitignore`:
-
-```gitignore
-.venv/
-.venv-1/
-.venv313/
-__pycache__/
-*.pyc
-*.log
-```
 
 ## Autor
 
