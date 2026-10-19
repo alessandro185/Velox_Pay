@@ -14,7 +14,7 @@
           <span>Desconto automático de 10% e aprovação instantânea simulada</span>
         </div>
         <label class="switch">
-          <input type="checkbox" checked>
+          <input type="checkbox" data-method="Pix" checked>
           <span></span>
         </label>
       </div>
@@ -24,7 +24,7 @@
           <span>Simulação com 90% de chance de aprovação</span>
         </div>
         <label class="switch">
-          <input type="checkbox" checked>
+          <input type="checkbox" data-method="Cartão" checked>
           <span></span>
         </label>
       </div>
@@ -34,7 +34,7 @@
           <span>Pagamento presencial sempre aprovado</span>
         </div>
         <label class="switch">
-          <input type="checkbox" checked>
+          <input type="checkbox" data-method="Dinheiro" checked>
           <span></span>
         </label>
       </div>
@@ -44,7 +44,7 @@
           <span>Método preparado para integração futura</span>
         </div>
         <label class="switch">
-          <input type="checkbox">
+          <input type="checkbox" data-method="Vale Refeição">
           <span></span>
         </label>
       </div>
@@ -59,18 +59,18 @@
     <div class="bar-list">
       <div class="bar-row">
         <span class="bar-label">Pix</span>
-        <div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--green)"></div></div>
-        <span class="bar-value">45%</span>
+        <div class="bar-track"><div class="bar-fill" id="barPixMethod" style="width:0%;background:var(--green)"></div></div>
+        <span class="bar-value" id="valPixMethod">0%</span>
       </div>
       <div class="bar-row">
         <span class="bar-label">Cartão</span>
-        <div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--blue)"></div></div>
-        <span class="bar-value">38%</span>
+        <div class="bar-track"><div class="bar-fill" id="barCardMethod" style="width:0%;background:var(--blue)"></div></div>
+        <span class="bar-value" id="valCardMethod">0%</span>
       </div>
       <div class="bar-row">
         <span class="bar-label">Dinheiro</span>
-        <div class="bar-track"><div class="bar-fill" style="width:17%;background:var(--amber)"></div></div>
-        <span class="bar-value">17%</span>
+        <div class="bar-track"><div class="bar-fill" id="barCashMethod" style="width:0%;background:var(--amber)"></div></div>
+        <span class="bar-value" id="valCashMethod">0%</span>
       </div>
     </div>
   </section>

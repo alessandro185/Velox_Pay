@@ -2,25 +2,25 @@
   <article class="metric-card green">
     <div class="metric-icon">R$</div>
     <div class="metric-label">Total arrecadado</div>
-    <div class="metric-value">R$ 347,82</div>
-    <div class="metric-sub">12 transações hoje</div>
+    <div class="metric-value" id="metricTotal">R$ 0,00</div>
+    <div class="metric-sub" id="metricTotalSub">0 transações aprovadas</div>
   </article>
   <article class="metric-card blue">
     <div class="metric-icon">OK</div>
     <div class="metric-label">Aprovados</div>
-    <div class="metric-value">10</div>
-    <div class="metric-sub">83% taxa de aprovação</div>
+    <div class="metric-value" id="metricApproved">0</div>
+    <div class="metric-sub" id="metricApprovedSub">0% taxa de aprovação</div>
   </article>
   <article class="metric-card red">
     <div class="metric-icon">X</div>
     <div class="metric-label">Recusados</div>
-    <div class="metric-value">2</div>
-    <div class="metric-sub">17% de recusa simulada</div>
+    <div class="metric-value" id="metricRefused">0</div>
+    <div class="metric-sub" id="metricRefusedSub">0% taxa de recusa</div>
   </article>
   <article class="metric-card amber">
     <div class="metric-icon">%</div>
     <div class="metric-label">Economia Pix</div>
-    <div class="metric-value">R$ 12,30</div>
+    <div class="metric-value" id="metricPixSavings">R$ 0,00</div>
     <div class="metric-sub">desconto aplicado</div>
   </article>
 </div>
@@ -32,7 +32,10 @@
         <div class="card-title">Últimas transações</div>
         <div class="card-subtitle">Consulta rápida dos pedidos processados</div>
       </div>
-      <span class="pill pill-blue">GET /pagamentos/{id}</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="button secondary" style="min-height:28px;padding:0 10px;font-size:11px" type="button" data-action="reset-data">Resetar dados</button>
+        <span class="pill pill-blue">GET /pagamentos/{id}</span>
+      </div>
     </div>
     <div class="table-wrap">
       <table class="table">
@@ -58,18 +61,18 @@
       <div class="bar-list">
         <div class="bar-row">
           <span class="bar-label">Pix</span>
-          <div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--green)"></div></div>
-          <span class="bar-value">45%</span>
+          <div class="bar-track"><div class="bar-fill" id="barPix" style="width:0%;background:var(--green)"></div></div>
+          <span class="bar-value" id="valPix">0%</span>
         </div>
         <div class="bar-row">
           <span class="bar-label">Cartão</span>
-          <div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--blue)"></div></div>
-          <span class="bar-value">38%</span>
+          <div class="bar-track"><div class="bar-fill" id="barCard" style="width:0%;background:var(--blue)"></div></div>
+          <span class="bar-value" id="valCard">0%</span>
         </div>
         <div class="bar-row">
           <span class="bar-label">Dinheiro</span>
-          <div class="bar-track"><div class="bar-fill" style="width:17%;background:var(--amber)"></div></div>
-          <span class="bar-value">17%</span>
+          <div class="bar-track"><div class="bar-fill" id="barCash" style="width:0%;background:var(--amber)"></div></div>
+          <span class="bar-value" id="valCash">0%</span>
         </div>
       </div>
     </section>
