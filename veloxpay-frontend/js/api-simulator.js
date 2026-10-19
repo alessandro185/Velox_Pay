@@ -5,11 +5,11 @@ const VeloxPaySimulator = (() => {
   const KEY_EXPORTS = "veloxpay_exports_v2";
 
   const DEFAULT_TRANSACTIONS = [
-    { id: "001", method: "Pix", value: 44.91, status: "Aprovado", time: "hoje 21:38" },
-    { id: "002", method: "Cartão", value: 89.9, status: "Aprovado", time: "hoje 21:15" },
-    { id: "003", method: "Dinheiro", value: 32, status: "Aprovado", time: "hoje 20:52" },
-    { id: "004", method: "Cartão", value: 57.5, status: "Recusado", time: "hoje 20:41" },
-    { id: "005", method: "Pix", value: 22.41, status: "Pendente", time: "hoje 20:30" },
+    { id: "001", method: "Pix", value: 44.91, status: "Aprovado", time: "hoje 21:38", client: "Maria Oliveira" },
+    { id: "002", method: "Cartão", value: 89.9, status: "Aprovado", time: "hoje 21:15", client: "Carlos Mendes" },
+    { id: "003", method: "Dinheiro", value: 32, status: "Aprovado", time: "hoje 20:52", client: "Balcão Presencial" },
+    { id: "004", method: "Cartão", value: 57.5, status: "Recusado", time: "hoje 20:41", client: "Ana Paula" },
+    { id: "005", method: "Pix", value: 22.41, status: "Pendente", time: "hoje 20:30", client: "Felipe Santos" },
   ];
 
   const DEFAULT_METHODS = {
@@ -30,7 +30,7 @@ const VeloxPaySimulator = (() => {
     },
   };
 
-  // --- Helpers de Armazenamento ---
+  // --- Armazenamento Local ---
   function getTransactions() {
     try {
       const data = localStorage.getItem(KEY_TX);
@@ -90,7 +90,7 @@ const VeloxPaySimulator = (() => {
     return next;
   }
 
-  // --- Formatação e Classes ---
+  // --- Helpers de Formatação ---
   function brl(value) {
     return Number(value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   }
@@ -107,12 +107,12 @@ const VeloxPaySimulator = (() => {
     return "pill pill-amber";
   }
 
-  // --- Renderização de Transações ---
-  function renderTransactions(container) {
+  // --- 1. DASHBOARD ---
+  function renderDashboardTransactions(container) {
     const table = container.querySelector("#transactionsTable");
     if (!table) return;
 
-    const list = getTransactions();
+    const list = getTransactions().slice(0, 6);
     if (list.length === 0) {
       table.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:1.5rem;color:var(--muted)">Nenhuma transação registrada.</td></tr>`;
       return;
@@ -129,7 +129,6 @@ const VeloxPaySimulator = (() => {
     `).join("");
   }
 
-  // --- Atualização de Métricas do Dashboard ---
   function updateDashboardMetrics(container) {
     const txs = getTransactions();
     const approvedTxs = txs.filter((t) => t.status === "Aprovado");
@@ -141,7 +140,6 @@ const VeloxPaySimulator = (() => {
     const approvalRate = totalCount > 0 ? Math.round((approvedCount / totalCount) * 100) : 0;
     const refusalRate = totalCount > 0 ? Math.round((refusedCount / totalCount) * 100) : 0;
 
-    // Economia Pix (10% sobre valor original)
     const pixApproved = approvedTxs.filter((t) => t.method === "Pix");
     const pixSavings = pixApproved.reduce((acc, t) => acc + (Number(t.value) / 0.9 * 0.1), 0);
 
@@ -158,10 +156,9 @@ const VeloxPaySimulator = (() => {
     if (mApproved) mApproved.textContent = approvedCount;
     if (mApprovedSub) mApprovedSub.textContent = `${approvalRate}% taxa de aprovação`;
     if (mRefused) mRefused.textContent = refusedCount;
-    if (mRefusedSub) mRefusedSub.textContent = `${refusalRate}% de recusa simulada`;
+    if (mRefusedSub) mRefusedSub.textContent = `${refusalRate}% taxa de recusa`;
     if (mPixSavings) mPixSavings.textContent = brl(pixSavings);
 
-    // Barras de distribuição
     const pixCount = txs.filter((t) => t.method === "Pix").length;
     const cardCount = txs.filter((t) => t.method === "Cartão").length;
     const cashCount = txs.filter((t) => t.method === "Dinheiro").length;
@@ -184,9 +181,8 @@ const VeloxPaySimulator = (() => {
     if (vCash) vCash.textContent = `${pCash}%`;
   }
 
-  // --- Sincronizar Dropdown de Métodos no Dashboard ---
-  function syncPaymentMethodsDropdown(container) {
-    const select = container.querySelector("#inp-metodo");
+  function syncPaymentMethodsDropdown(container, selectSelector = "#inp-metodo") {
+    const select = container.querySelector(selectSelector);
     if (!select) return;
     const methods = getMethods();
 
@@ -196,18 +192,18 @@ const VeloxPaySimulator = (() => {
       opt.disabled = !isEnabled;
       if (!isEnabled) {
         if (!opt.text.includes("(Desativado)")) {
-          opt.text = `${opt.value} (Desativado nas configurações)`;
+          opt.text = `${opt.value} (Desativado)`;
         }
       } else {
-        if (opt.value === "Pix") opt.text = "Pix - desconto 10%";
-        else if (opt.value === "Cartão") opt.text = "Cartão";
-        else if (opt.value === "Dinheiro") opt.text = "Dinheiro - sempre aprovado";
+        if (opt.value === "Pix") opt.text = "Pix (10% de desconto automático)";
+        else if (opt.value === "Cartão") opt.text = "Cartão de Crédito";
+        else if (opt.value === "Dinheiro") opt.text = "Dinheiro (Aprovação imediata)";
       }
     });
   }
 
-  // --- Processar Novo Pagamento ---
-  function simulatePayment(container) {
+  // Quick payment form in Dashboard
+  function simulateQuickPayment(container) {
     const order = container.querySelector("#inp-pedido")?.value?.trim();
     const value = parseFloat(container.querySelector("#inp-valor")?.value);
     const method = container.querySelector("#inp-metodo")?.value;
@@ -217,7 +213,7 @@ const VeloxPaySimulator = (() => {
 
     if (!order || isNaN(value) || value <= 0 || !method) {
       result.style.color = "var(--red)";
-      result.textContent = "Preencha o ID do pedido, um valor válido e selecione o método.";
+      result.textContent = "Preencha o ID do pedido, valor válido e selecione o método.";
       return;
     }
 
@@ -240,6 +236,7 @@ const VeloxPaySimulator = (() => {
       value: finalValue,
       status,
       time: timeStr,
+      client: "Venda Rápida",
     };
 
     const currentList = getTransactions();
@@ -247,33 +244,266 @@ const VeloxPaySimulator = (() => {
     saveTransactions(currentList);
 
     result.style.color = status === "Aprovado" ? "var(--green)" : "var(--red)";
-    result.textContent = `✓ Pedido #${order} -> ${status} (${brl(finalValue)}) - Salvo com sucesso!`;
+    result.textContent = `✓ Pedido #${order} -> ${status} (${brl(finalValue)}) - Salvo no histórico!`;
 
-    // Limpar campos
     const inpOrder = container.querySelector("#inp-pedido");
     const inpVal = container.querySelector("#inp-valor");
     if (inpOrder) inpOrder.value = "";
     if (inpVal) inpVal.value = "";
 
-    renderTransactions(container);
+    renderDashboardTransactions(container);
     updateDashboardMetrics(container);
   }
 
-  // --- Resetar / Limpar Dados ---
+  // --- 2. TELA DEDICADA: TRANSAÇÕES (views/transacoes.html) ---
+  function bindTransactionsView(container) {
+    const table = container.querySelector("#fullTransactionsTable");
+    if (!table) return;
+
+    function renderFiltered() {
+      const search = (container.querySelector("#txFilterSearch")?.value || "").toLowerCase().trim();
+      const selMethod = container.querySelector("#txFilterMethod")?.value || "";
+      const selStatus = container.querySelector("#txFilterStatus")?.value || "";
+
+      let list = getTransactions();
+
+      if (search) {
+        list = list.filter((t) =>
+          t.id.toLowerCase().includes(search) ||
+          (t.client && t.client.toLowerCase().includes(search)) ||
+          t.value.toString().includes(search)
+        );
+      }
+
+      if (selMethod) {
+        list = list.filter((t) => t.method === selMethod);
+      }
+
+      if (selStatus) {
+        list = list.filter((t) => t.status === selStatus);
+      }
+
+      // Update metrics
+      const allTxs = getTransactions();
+      const approvedTxs = allTxs.filter((t) => t.status === "Aprovado");
+      const volumeSum = approvedTxs.reduce((acc, t) => acc + Number(t.value), 0);
+      const totalCount = allTxs.length;
+      const successRate = totalCount > 0 ? Math.round((approvedTxs.length / totalCount) * 100) : 0;
+      const refusedCount = allTxs.filter((t) => t.status === "Recusado").length;
+
+      const mVol = container.querySelector("#txMetricVolume");
+      const mVolSub = container.querySelector("#txMetricVolumeSub");
+      const mTot = container.querySelector("#txMetricTotal");
+      const mSuc = container.querySelector("#txMetricSuccess");
+      const mRef = container.querySelector("#txMetricRefused");
+
+      if (mVol) mVol.textContent = brl(volumeSum);
+      if (mVolSub) mVolSub.textContent = `${approvedTxs.length} pedidos liquidados`;
+      if (mTot) mTot.textContent = totalCount;
+      if (mSuc) mSuc.textContent = `${successRate}%`;
+      if (mRef) mRef.textContent = refusedCount;
+
+      if (list.length === 0) {
+        table.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Nenhuma transação encontrada com os filtros aplicados.</td></tr>`;
+        return;
+      }
+
+      table.innerHTML = list.map((item) => `
+        <tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="mono" style="font-weight:700">#${item.id}</span>
+              ${item.client ? `<small class="muted" style="font-size:11px">(${item.client})</small>` : ""}
+            </div>
+          </td>
+          <td><span class="${tagClass(item.method)}">${item.method}</span></td>
+          <td>
+            <strong>${brl(item.value)}</strong>
+            ${item.method === "Pix" ? '<span class="tag tag-pix" style="margin-left:6px;font-size:9px">-10% Pix</span>' : ""}
+          </td>
+          <td><span class="${statusClass(item.status)}">${item.status}</span></td>
+          <td><span class="mono muted">${item.time}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    container.querySelector("#txFilterSearch")?.addEventListener("input", renderFiltered);
+    container.querySelector("#txFilterMethod")?.addEventListener("change", renderFiltered);
+    container.querySelector("#txFilterStatus")?.addEventListener("change", renderFiltered);
+
+    renderFiltered();
+  }
+
+  // --- 3. TELA DEDICADA: NOVO PAGAMENTO (views/novo-pagamento.html) ---
+  function bindNovoPagamentoView(container) {
+    syncPaymentMethodsDropdown(container, "#inp-np-metodo");
+
+    const inpValor = container.querySelector("#inp-np-valor");
+    const inpMetodo = container.querySelector("#inp-np-metodo");
+    const previewSub = container.querySelector("#previewSubtotal");
+    const previewDesc = container.querySelector("#previewDesconto");
+    const previewTot = container.querySelector("#previewTotal");
+    const methodBox = container.querySelector("#previewMethodBox");
+    const extraBox = container.querySelector("#paymentDynamicExtra");
+
+    function updateLivePreview() {
+      const rawVal = parseFloat(inpValor?.value) || 0;
+      const method = inpMetodo?.value || "";
+
+      let discount = 0;
+      let finalVal = rawVal;
+
+      if (method === "Pix" && rawVal > 0) {
+        discount = rawVal * 0.1;
+        finalVal = rawVal * 0.9;
+      }
+
+      if (previewSub) previewSub.textContent = brl(rawVal);
+      if (previewDesc) previewDesc.textContent = `- ${brl(discount)}`;
+      if (previewTot) previewTot.textContent = brl(finalVal);
+
+      if (!method) {
+        if (methodBox) {
+          methodBox.innerHTML = `<div style="font-size:12px;color:var(--muted)">Selecione um método de pagamento para pré-visualizar.</div>`;
+        }
+        if (extraBox) extraBox.innerHTML = "";
+        return;
+      }
+
+      if (method === "Pix") {
+        if (methodBox) {
+          methodBox.innerHTML = `
+            <div style="display:grid;gap:6px;text-align:center;">
+              <span class="pill pill-green" style="margin:0 auto;">Chave Pix Dinâmica</span>
+              <div style="font-family:var(--font-mono);font-size:11px;background:var(--surface);padding:8px;border-radius:4px;word-break:break-all;color:var(--green)">
+                00020126580014br.gov.bcb.pix0136veloxpay-checkout-${Date.now()}
+              </div>
+              <small class="muted" style="font-size:11px">Aprovação instantânea via Webhook</small>
+            </div>
+          `;
+        }
+        if (extraBox) {
+          extraBox.innerHTML = `
+            <div class="pill pill-green" style="width:100%;justify-content:center;padding:6px;border-radius:var(--radius)">
+              ⚡ 10% de desconto aplicado automaticamente no Pix!
+            </div>
+          `;
+        }
+      } else if (method === "Cartão") {
+        if (methodBox) {
+          methodBox.innerHTML = `
+            <div style="display:grid;gap:6px;text-align:left;font-size:12px;">
+              <span class="pill pill-blue">Gateway de Cartão</span>
+              <div style="color:var(--muted);">Simulação com processamento de bandeira Visa/Mastercard. Taxa de autorização média: 85%.</div>
+            </div>
+          `;
+        }
+        if (extraBox) {
+          extraBox.innerHTML = `
+            <label class="form-row">
+              <span class="form-label">Parcelamento</span>
+              <select class="select">
+                <option>1x de ${brl(finalVal)} sem juros</option>
+                <option>2x de ${brl(finalVal / 2)} sem juros</option>
+                <option>3x de ${brl(finalVal / 3)} sem juros</option>
+              </select>
+            </label>
+          `;
+        }
+      } else if (method === "Dinheiro") {
+        if (methodBox) {
+          methodBox.innerHTML = `
+            <div style="display:grid;gap:6px;text-align:center;">
+              <span class="pill pill-amber" style="margin:0 auto;">Recebimento em Balcão</span>
+              <div style="font-size:12px;color:var(--muted)">Pagamento registrado e aprovado no caixa sem taxas adicionais.</div>
+            </div>
+          `;
+        }
+        if (extraBox) extraBox.innerHTML = "";
+      }
+    }
+
+    inpValor?.addEventListener("input", updateLivePreview);
+    inpMetodo?.addEventListener("change", updateLivePreview);
+
+    container.querySelector("[data-action='submit-novo-pagamento']")?.addEventListener("click", () => {
+      const order = container.querySelector("#inp-np-pedido")?.value?.trim();
+      const client = container.querySelector("#inp-np-cliente")?.value?.trim() || "Cliente Balcão";
+      const value = parseFloat(container.querySelector("#inp-np-valor")?.value);
+      const method = container.querySelector("#inp-np-metodo")?.value;
+      const result = container.querySelector("#np-resultado");
+      const receipt = container.querySelector("#receiptContainer");
+
+      if (!order || isNaN(value) || value <= 0 || !method) {
+        if (result) {
+          result.style.color = "var(--red)";
+          result.textContent = "Preencha o ID do pedido, um valor válido e selecione o método.";
+        }
+        return;
+      }
+
+      const finalValue = method === "Pix" ? Number((value * 0.9).toFixed(2)) : Number(value.toFixed(2));
+      const status = method === "Dinheiro" ? "Aprovado" : (Math.random() < 0.85 ? "Aprovado" : "Recusado");
+      const now = new Date();
+      const timeStr = `hoje ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+
+      const newTx = {
+        id: order.padStart(3, "0"),
+        method,
+        value: finalValue,
+        status,
+        time: timeStr,
+        client,
+      };
+
+      const currentList = getTransactions();
+      currentList.unshift(newTx);
+      saveTransactions(currentList);
+
+      if (result) {
+        result.style.color = status === "Aprovado" ? "var(--green)" : "var(--red)";
+        result.textContent = `✓ Pedido #${order} processado com status: ${status} (${brl(finalValue)})! Gravado com sucesso no banco local.`;
+      }
+
+      // Generate digital receipt
+      if (receipt) {
+        receipt.innerHTML = `
+          <div style="border-bottom:1px dashed var(--border);padding-bottom:6px;margin-bottom:6px">
+            <strong style="color:var(--text)">COMPROVANTE DE TRANSAÇÃO - VELOXPAY</strong><br>
+            <span class="muted">Autenticação: ${Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
+          </div>
+          <div><strong>Pedido:</strong> #${order.padStart(3, "0")}</div>
+          <div><strong>Cliente:</strong> ${client}</div>
+          <div><strong>Método:</strong> ${method}</div>
+          <div><strong>Valor Liquidado:</strong> ${brl(finalValue)}</div>
+          <div><strong>Status:</strong> <span class="${statusClass(status)}">${status}</span></div>
+          <div><strong>Data/Hora:</strong> ${now.toLocaleDateString("pt-BR")} às ${now.toLocaleTimeString("pt-BR")}</div>
+        `;
+      }
+
+      // Clear input order & value
+      const inpO = container.querySelector("#inp-np-pedido");
+      const inpV = container.querySelector("#inp-np-valor");
+      const inpC = container.querySelector("#inp-np-cliente");
+      if (inpO) inpO.value = "";
+      if (inpV) inpV.value = "";
+      if (inpC) inpC.value = "";
+      updateLivePreview();
+    });
+  }
+
+  // --- 4. RESETAR DADOS ---
   function resetData(container) {
     if (confirm("Deseja restaurar as transações padrão de exemplo?")) {
       saveTransactions(DEFAULT_TRANSACTIONS);
-      renderTransactions(container);
+      renderDashboardTransactions(container);
       updateDashboardMetrics(container);
-      const res = container.querySelector("#resultado");
-      if (res) {
-        res.style.color = "var(--blue)";
-        res.textContent = "Dados restaurados para o padrão!";
-      }
+      bindTransactionsView(container);
+      alert("Dados restaurados com sucesso!");
     }
   }
 
-  // --- Gerenciamento da Tela de Métodos ---
+  // --- 5. TELA DE MÉTODOS ---
   function bindMethodsView(container) {
     const methods = getMethods();
 
@@ -317,7 +547,7 @@ const VeloxPaySimulator = (() => {
     if (vCash) vCash.textContent = `${pCash}%`;
   }
 
-  // --- Gerenciamento da Tela de Configurações ---
+  // --- 6. TELA DE CONFIGURAÇÕES ---
   function bindSettingsView(container) {
     const settings = getSettings();
 
@@ -359,7 +589,7 @@ const VeloxPaySimulator = (() => {
     });
   }
 
-  // --- Gerenciamento da Tela de Relatórios ---
+  // --- 7. TELA DE RELATÓRIOS ---
   function bindReportsView(container) {
     const txs = getTransactions();
     const approvedTxs = txs.filter((t) => t.status === "Aprovado");
@@ -377,7 +607,7 @@ const VeloxPaySimulator = (() => {
     if (rExp) rExp.textContent = getExportCount();
   }
 
-  // --- Ações de Utilidade (Tokens, Copiar, Exportar) ---
+  // --- Utilidades ---
   function toggleToken(inputId, button) {
     const input = document.getElementById(inputId);
     if (!input) return;
@@ -401,8 +631,8 @@ const VeloxPaySimulator = (() => {
 
   function exportCSV(button) {
     const txs = getTransactions();
-    const headers = ["Pedido", "Metodo", "Valor", "Status", "Data"];
-    const rows = txs.map((t) => [t.id, t.method, t.value.toFixed(2), t.status, t.time]);
+    const headers = ["Pedido", "Cliente", "Metodo", "Valor", "Status", "Data"];
+    const rows = txs.map((t) => [t.id, t.client || "-", t.method, t.value.toFixed(2), t.status, t.time]);
     const csvContent = [headers.join(";"), ...rows.map((e) => e.join(";"))].join("\n");
 
     const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
@@ -415,11 +645,13 @@ const VeloxPaySimulator = (() => {
     document.body.removeChild(link);
 
     const nextCount = incrementExportCount();
-    const original = button.textContent;
-    button.textContent = "Baixado!";
-    setTimeout(() => {
-      button.textContent = original;
-    }, 1400);
+    if (button) {
+      const original = button.textContent;
+      button.textContent = "Baixado!";
+      setTimeout(() => {
+        button.textContent = original;
+      }, 1400);
+    }
 
     const rExp = document.getElementById("repExportacoes");
     if (rExp) rExp.textContent = nextCount;
@@ -432,29 +664,35 @@ const VeloxPaySimulator = (() => {
     if (rExp) rExp.textContent = nextCount;
   }
 
-  // --- Vinculação de Visualização Global ---
+  // --- BIND GLOBAL DE VISUALIZAÇÃO ---
   function bindView(container) {
     // 1. Dashboard
-    renderTransactions(container);
+    renderDashboardTransactions(container);
     updateDashboardMetrics(container);
-    syncPaymentMethodsDropdown(container);
+    syncPaymentMethodsDropdown(container, "#inp-metodo");
 
     container.querySelector("[data-action='simulate-payment']")
-      ?.addEventListener("click", () => simulatePayment(container));
+      ?.addEventListener("click", () => simulateQuickPayment(container));
 
     container.querySelector("[data-action='reset-data']")
       ?.addEventListener("click", () => resetData(container));
 
-    // 2. Métodos
+    // 2. Dedicada: Transações
+    bindTransactionsView(container);
+
+    // 3. Dedicada: Novo Pagamento
+    bindNovoPagamentoView(container);
+
+    // 4. Métodos
     bindMethodsView(container);
 
-    // 3. Configurações
+    // 5. Configurações
     bindSettingsView(container);
 
-    // 4. Relatórios
+    // 6. Relatórios
     bindReportsView(container);
 
-    // 5. Botões Globais
+    // 7. Botões Globais
     container.querySelectorAll("[data-action='toggle-token']").forEach((button) => {
       button.addEventListener("click", () => toggleToken(button.dataset.target, button));
     });

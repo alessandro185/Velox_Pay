@@ -1,0 +1,84 @@
+<div class="metrics">
+  <article class="metric-card green">
+    <div class="metric-icon">R$</div>
+    <div class="metric-label">Volume Aprovado</div>
+    <div class="metric-value" id="txMetricVolume">R$ 0,00</div>
+    <div class="metric-sub" id="txMetricVolumeSub">0 transações</div>
+  </article>
+  <article class="metric-card blue">
+    <div class="metric-icon">TX</div>
+    <div class="metric-label">Total Registrado</div>
+    <div class="metric-value" id="txMetricTotal">0</div>
+    <div class="metric-sub">histórico completo</div>
+  </article>
+  <article class="metric-card purple">
+    <div class="metric-icon">%</div>
+    <div class="metric-label">Taxa de Sucesso</div>
+    <div class="metric-value" id="txMetricSuccess">0%</div>
+    <div class="metric-sub" id="txMetricSuccessSub">índice de aprovação</div>
+  </article>
+  <article class="metric-card red">
+    <div class="metric-icon">X</div>
+    <div class="metric-label">Recusas</div>
+    <div class="metric-value" id="txMetricRefused">0</div>
+    <div class="metric-sub">transações não autorizadas</div>
+  </article>
+</div>
+
+<section class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Gestão de Transações</div>
+      <div class="card-subtitle">Filtre, pesquise e acompanhe todas as operações em tempo real</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="button secondary" style="min-height:32px;padding:0 12px;font-size:12px" type="button" data-action="export-report">Exportar CSV</button>
+      <button class="button secondary" style="min-height:32px;padding:0 12px;font-size:12px" type="button" data-action="reset-data">Resetar dados</button>
+      <button class="button" style="min-height:32px;padding:0 14px;font-size:12px" type="button" data-view="novo-pagamento">+ Novo pagamento</button>
+    </div>
+  </div>
+
+  <div class="form" style="margin-bottom: 1.2rem;">
+    <div class="form-grid" style="grid-template-columns: 2fr 1fr 1fr;">
+      <label class="form-row">
+        <span class="form-label">Buscar transação</span>
+        <input class="input" id="txFilterSearch" type="search" placeholder="Buscar por ID (#001) ou valor...">
+      </label>
+      <label class="form-row">
+        <span class="form-label">Filtrar por Método</span>
+        <select class="select" id="txFilterMethod">
+          <option value="">Todos os métodos</option>
+          <option value="Pix">Pix</option>
+          <option value="Cartão">Cartão</option>
+          <option value="Dinheiro">Dinheiro</option>
+        </select>
+      </label>
+      <label class="form-row">
+        <span class="form-label">Filtrar por Status</span>
+        <select class="select" id="txFilterStatus">
+          <option value="">Todos os status</option>
+          <option value="Aprovado">Aprovado</option>
+          <option value="Pendente">Pendente</option>
+          <option value="Recusado">Recusado</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Método</th>
+          <th>Valor Líquido</th>
+          <th>Status</th>
+          <th>Data / Horário</th>
+        </tr>
+      </thead>
+      <tbody id="fullTransactionsTable">
+        <!-- Renderizado dinamicamente -->
+      </tbody>
+    </table>
+  </div>
+</section>

@@ -1,8 +1,10 @@
 const VeloxPayRouter = (() => {
   const routes = {
-    dashboard: { title: "Dashboard", crumb: "/ pagamentos", file: "dashboard.html" },
+    dashboard: { title: "Dashboard", crumb: "/ visão geral", file: "dashboard.html" },
+    transacoes: { title: "Transações", crumb: "/ pagamentos", file: "transacoes.html" },
+    "novo-pagamento": { title: "Novo Pagamento", crumb: "/ checkout", file: "novo-pagamento.html" },
     relatorios: { title: "Relatórios", crumb: "/ análise", file: "relatorios.html" },
-    metodos: { title: "Métodos", crumb: "/ checkout", file: "metodos.html" },
+    metodos: { title: "Métodos", crumb: "/ métodos de pagamento", file: "metodos.html" },
     "api-docs": { title: "API & Docs", crumb: "/ desenvolvedores", file: "api-docs.html" },
     configuracoes: { title: "Configurações", crumb: "/ sistema", file: "configuracoes.html" },
   };
@@ -22,7 +24,7 @@ const VeloxPayRouter = (() => {
 
   function setActive(viewName) {
     document.querySelectorAll(".nav-item[data-view]").forEach((item) => {
-      item.classList.toggle("active", item.dataset.view === viewName && !item.dataset.focus);
+      item.classList.toggle("active", item.dataset.view === viewName);
     });
   }
 
